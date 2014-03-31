@@ -9,6 +9,7 @@ module.exports = function (grunt) {
     var options = this.options();
 
     var steps = options.steps;
+    var reqs = options.require;
     var tags = options.tags;
     var format = options.format;
     var modulePath = options.modulePath;
@@ -47,9 +48,21 @@ module.exports = function (grunt) {
       execOptions = execOptions.concat(files);
     }
 
-    if (! _.isEmpty(steps)) {
-      execOptions.push('-r');
-      execOptions.push(steps);
+    if (! _.isEmpty(steps) || ! _.isEmpty(reqs)) {
+      if (_.isUndefined(reqs)) {
+          reqs = [];
+      } else if (!Array.isArray(reqs)) {
+          reqs = [reqs];
+      }
+
+      if (! _.isUndefined(steps)) {
+          reqs.push(steps);
+      }
+
+      _.each(reqs, function (req) {
+        execOptions.push('-r');
+        execOptions.push(req);
+      });
     }
 
     if (! _.isEmpty(tags)) {
